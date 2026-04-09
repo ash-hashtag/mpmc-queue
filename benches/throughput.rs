@@ -173,21 +173,24 @@ fn format_throughput(ops_per_sec: f64) -> String {
 
 fn main() {
     let thread_counts = [1, 2, 4, 8, 16];
-    let capacities = [64, 256, 1024];
+    let capacities = [64, 256, 1024, 2048];
 
     println!("╔══════════════════════════════════════════════════════════════════╗");
-    println!("║              MPMC Queue Throughput Benchmarks                   ║");
+    println!("║              MPMC Queue Throughput Benchmarks                    ║");
     println!("╠══════════════════════════════════════════════════════════════════╣");
-    println!("║  Duration per test: {:?}                                    ║", BENCH_DURATION);
+    println!(
+        "║  Duration per test: {:?}                                           ║",
+        BENCH_DURATION
+    );
     println!("╚══════════════════════════════════════════════════════════════════╝");
     println!();
 
     // ── Symmetric benchmarks ─────────────────────────────────────────────
-    println!("┌──────────────────────────────────────────────────────────────────┐");
-    println!("│  Symmetric: N producers + N consumers                           │");
-    println!("├──────────┬──────────────┬──────────────┬──────────────┤");
-    println!("│ Threads  │   Cap 64     │   Cap 256    │  Cap 1024    │");
-    println!("├──────────┼──────────────┼──────────────┼──────────────┤");
+    println!("┌─────────────────────────────────────────────────────────────────────┐");
+    println!("│  Symmetric: N producers + N consumers                               │");
+    println!("├──────────┬──────────────┬──────────────┬─────────────┬──────────────┤");
+    println!("│ Threads  │   Cap 64     │   Cap 256    │  Cap 1024   │   Cap 2048   │");
+    println!("├──────────┼──────────────┼──────────────┼─────────────┼──────────────┤");
 
     for &threads in &thread_counts {
         let mut results = Vec::new();
@@ -196,38 +199,34 @@ fn main() {
             results.push(format_throughput(throughput));
         }
         println!(
-            "│ {:>2}P/{:>2}C  │ {:>12} │ {:>12} │ {:>12} │",
-            threads, threads, results[0], results[1], results[2]
+            "│ {:>2}P/{:>2}C  │ {:>12} │ {:>12} │ {:>12} │ {:>12} |",
+            threads, threads, results[0], results[1], results[2], results[3]
         );
     }
-    println!("└──────────┴──────────────┴──────────────┴──────────────┘");
+    println!("└──────────┴──────────────┴──────────────┴──────────────┴──────────────┘");
     println!();
 
     // ── Asymmetric benchmarks ────────────────────────────────────────────
     let asymmetric_configs: Vec<(usize, usize, &str)> = vec![
-        (8, 1, " 8P/ 1C"),
-        (16, 1, "16P/ 1C"),
-        (8, 2, " 8P/ 2C"),
         (1, 8, " 1P/ 8C"),
-        (1, 16, " 1P/16C"),
+        (1, 16, " 1P/ 16C"),
         (2, 8, " 2P/ 8C"),
+        (4, 16, " 4P/ 16C"),
+        (8, 1, " 8P/ 1C"),
+        (8, 2, " 8P/ 2C"),
+        (16, 1, "16P/ 1C"),
         (16, 4, "16P/ 4C"),
-        (4, 16, " 4P/16C"),
     ];
 
     println!("┌──────────────────────────────────────────────────────────────────┐");
-    println!("│  Asymmetric workloads (capacity = 256)                          │");
+    println!("│  Asymmetric workloads (capacity = 256)                           │");
     println!("├──────────┬───────────────────────────────────────────────────────┤");
-    println!("│  Config  │  Throughput                                          │");
+    println!("│  Config  │  Throughput                                           │");
     println!("├──────────┼───────────────────────────────────────────────────────┤");
 
     for (producers, consumers, label) in &asymmetric_configs {
         let throughput = bench_asymmetric(*producers, *consumers, 256);
-        println!(
-            "│ {} │  {:>52} │",
-            label,
-            format_throughput(throughput)
-        );
+        println!("│ {}  │  {:>52} │", label, format_throughput(throughput));
     }
     println!("└──────────┴───────────────────────────────────────────────────────┘");
 }
