@@ -125,6 +125,8 @@ impl<T> Drop for MpmcQueue<T> {
     }
 }
 
+const SPIN_LIMIT: usize = 1_000;
+
 impl<T: Send> BoundedQueue<T> for MpmcQueue<T> {
     fn new(capacity: usize) -> Self {
         assert!(capacity > 0, "capacity must be > 0");
@@ -157,7 +159,7 @@ impl<T: Send> BoundedQueue<T> for MpmcQueue<T> {
     fn push(&self, mut item: T) {
         // Fast path: Try non-blocking push with minimal spinning
         // This keeps throughput high under moderate contention without parking.
-        for _ in 0..1_000 {
+        for _ in 0..SPIN_LIMIT {
             match self.try_push(item) {
                 Ok(()) => return,
                 Err(returned) => item = returned,
@@ -200,7 +202,7 @@ impl<T: Send> BoundedQueue<T> for MpmcQueue<T> {
 
     fn pop(&self) -> T {
         // Fast path
-        for _ in 0..1_000 {
+        for _ in 0..SPIN_LIMIT {
             if let Some(item) = self.try_pop() {
                 return item;
             }
@@ -537,9 +539,12 @@ mod tests {
                 thread::spawn(move || {
                     barrier.wait();
                     let mut local = Vec::new();
-                    while items_left.fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
-                        if n > 0 { Some(n - 1) } else { None }
-                    }).is_ok() {
+                    while items_left
+                        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
+                            if n > 0 { Some(n - 1) } else { None }
+                        })
+                        .is_ok()
+                    {
                         local.push(q.pop());
                     }
                     received.lock().unwrap().extend(local);
@@ -600,9 +605,12 @@ mod tests {
                 thread::spawn(move || {
                     barrier.wait();
                     let mut local = Vec::new();
-                    while items_left.fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
-                        if n > 0 { Some(n - 1) } else { None }
-                    }).is_ok() {
+                    while items_left
+                        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
+                            if n > 0 { Some(n - 1) } else { None }
+                        })
+                        .is_ok()
+                    {
                         local.push(q.pop());
                     }
                     received.lock().unwrap().extend(local);
@@ -687,9 +695,12 @@ mod tests {
                 thread::spawn(move || {
                     barrier.wait();
                     let mut local = Vec::new();
-                    while items_left.fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
-                        if n > 0 { Some(n - 1) } else { None }
-                    }).is_ok() {
+                    while items_left
+                        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
+                            if n > 0 { Some(n - 1) } else { None }
+                        })
+                        .is_ok()
+                    {
                         local.push(q.pop());
                     }
                     received.lock().unwrap().extend(local);
@@ -749,9 +760,12 @@ mod tests {
                 thread::spawn(move || {
                     barrier.wait();
                     let mut local = Vec::new();
-                    while items_left.fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
-                        if n > 0 { Some(n - 1) } else { None }
-                    }).is_ok() {
+                    while items_left
+                        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
+                            if n > 0 { Some(n - 1) } else { None }
+                        })
+                        .is_ok()
+                    {
                         local.push(q.pop());
                     }
                     received.lock().unwrap().extend(local);
@@ -841,9 +855,12 @@ mod tests {
                 thread::spawn(move || {
                     barrier.wait();
                     let mut local = Vec::new();
-                    while items_left.fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
-                        if n > 0 { Some(n - 1) } else { None }
-                    }).is_ok() {
+                    while items_left
+                        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
+                            if n > 0 { Some(n - 1) } else { None }
+                        })
+                        .is_ok()
+                    {
                         local.push(q.pop());
                     }
                     received.lock().unwrap().extend(local);
@@ -906,9 +923,12 @@ mod tests {
                 thread::spawn(move || {
                     barrier.wait();
                     let mut local = Vec::new();
-                    while items_left.fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
-                        if n > 0 { Some(n - 1) } else { None }
-                    }).is_ok() {
+                    while items_left
+                        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
+                            if n > 0 { Some(n - 1) } else { None }
+                        })
+                        .is_ok()
+                    {
                         // Spin on try_pop.
                         loop {
                             match q.try_pop() {
