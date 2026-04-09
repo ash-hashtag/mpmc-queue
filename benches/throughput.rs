@@ -218,15 +218,21 @@ fn main() {
         (16, 4, "16P/ 4C"),
     ];
 
-    println!("┌──────────────────────────────────────────────────────────────────┐");
-    println!("│  Asymmetric workloads (capacity = 256)                           │");
-    println!("├──────────┬───────────────────────────────────────────────────────┤");
-    println!("│  Config  │  Throughput                                           │");
-    println!("├──────────┼───────────────────────────────────────────────────────┤");
+    println!("┌─────────────────────────────────────────────────────────────────────────────┐");
+    println!("│  Asymmetric workloads                                                       │");
+    println!("├──────────┬──────────────────────────────┬───────────────────────────────────┤");
+    println!("│  Config  │  Cap 256                     │  Cap 1024                         │");
+    println!("├──────────┼──────────────────────────────┼───────────────────────────────────┤");
 
     for (producers, consumers, label) in &asymmetric_configs {
-        let throughput = bench_asymmetric(*producers, *consumers, 256);
-        println!("│ {}  │  {:>52} │", label, format_throughput(throughput));
+        let t256 = bench_asymmetric(*producers, *consumers, 256);
+        let t1024 = bench_asymmetric(*producers, *consumers, 1024);
+        println!(
+            "│ {}  │ {:>28} │ {:>33} │",
+            label,
+            format_throughput(t256),
+            format_throughput(t1024)
+        );
     }
-    println!("└──────────┴───────────────────────────────────────────────────────┘");
+    println!("└──────────┴──────────────────────────────┴───────────────────────────────────┘");
 }

@@ -33,25 +33,25 @@ The following benchmarks were conducted on an optimized build on a **Ryzen 5 560
 
 | Threads | Cap 64 | Cap 256 | Cap 1024 | Cap 2048 |
 | :--- | :--- | :--- | :--- | :--- |
-| **1P / 1C** | 12.28M | 12.49M | 12.51M | 12.82M |
-| **2P / 2C** | 6.70M | 6.75M | 6.90M | 6.91M |
-| **4P / 4C** | 4.38M | 4.54M | 4.48M | 4.33M |
-| **8P / 8C** | 3.92M | 3.69M | 3.81M | 3.75M |
-| **16P / 16C** | 3.54M | 3.57M | 3.65M | 3.58M |
+| **1P / 1C** | 12.52M | 12.32M | 12.47M | 12.74M |
+| **2P / 2C** | 6.67M | 6.68M | 6.80M | 6.82M |
+| **4P / 4C** | 4.49M | 4.37M | 4.48M | 4.44M |
+| **8P / 8C** | 3.70M | 3.65M | 3.75M | 3.72M |
+| **16P / 16C** | 3.48M | 3.57M | 3.63M | 3.59M |
 
 ### Asymmetric Workload
-*Varying number of producers and consumers (Capacity = 256).*
+*Varying number of producers and consumers.*
 
-| Config | Throughput |
-| :--- | :--- |
-| **1P / 8C** | 5.36M ops/s |
-| **1P / 16C** | 4.98M ops/s |
-| **2P / 8C** | 4.77M ops/s |
-| **4P / 16C** | 4.29M ops/s |
-| **8P / 1C** | 4.02M ops/s |
-| **8P / 2C** | 3.78M ops/s |
-| **16P / 1C** | 3.54M ops/s |
-| **16P / 4C** | 3.54M ops/s |
+| Config | Cap 256 | Cap 1024 |
+| :--- | :--- | :--- |
+| **1P / 8C** | 5.46M ops/s | 5.48M ops/s |
+| **1P / 16C** | 5.10M ops/s | 5.14M ops/s |
+| **2P / 8C** | 4.73M ops/s | 4.74M ops/s |
+| **4P / 16C** | 4.26M ops/s | 4.16M ops/s |
+| **8P / 1C** | 3.97M ops/s | 3.95M ops/s |
+| **8P / 2C** | 3.85M ops/s | 3.82M ops/s |
+| **16P / 1C** | 3.69M ops/s | 3.63M ops/s |
+| **16P / 4C** | 3.56M ops/s | 3.53M ops/s |
 
 ## Usage
 
